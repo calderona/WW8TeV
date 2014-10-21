@@ -1,3 +1,4 @@
+
 #include "TChain.h"
 #include "TFile.h"
 #include "TH1F.h"
@@ -217,11 +218,11 @@ void LatinosTreeScript(Float_t luminosity,
     tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_RunC_7032pbinv_LooseLoose.root");
     tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_RunD_7274pbinv_LooseLoose.root");
 
-
-    /* tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_085_WgammaToLNuG.root");
+     tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_085_WgammaToLNuG.root");
     tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_082_WGstarToElNuMad.root");
     tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_083_WGstarToMuNuMad.root");
-    tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_084_WGstarToTauNuMad.root");*/
+    tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_084_WGstarToTauNuMad.root");
+    tree->Add("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/WJet_LooseLoose/latino_086_ZgammaToLLuG.root");
 
 
   }
@@ -247,7 +248,9 @@ void LatinosTreeScript(Float_t luminosity,
  }
  else if (theSample == "WWTo2L2Nu_pow_nnll") {
    tree->Add("/gpfs/csic_projects/cms/calderon/WWGEN/nnllResummation/latino006_nll_ewk.root");
+   
  }
+
  else if (theSample == "WWTo2L2Nu_mad_nnll") {
    tree->Add("/gpfs/csic_projects/cms/calderon/WWGEN/nnllResummation/latino000_nll_ewk.root");
  }
@@ -261,7 +264,7 @@ void LatinosTreeScript(Float_t luminosity,
     tree->Add(filesPath + "latino_079_ZZTo2L2QMad.root"); 
   }
   else if (theSample == "TTbar") {
-    tree->Add(filesPath + "latino_019_TTTo2L2Nu2B.root");
+    tree->Add(filesPath + "latino_019_TTTo2L2Nu2B.root"); 
   }
   else if (theSample == "TW") {
     tree->Add(filesPath + "latino_011_TtWFullDR.root");
@@ -293,10 +296,12 @@ void LatinosTreeScript(Float_t luminosity,
   else if (theSample == "Zgamma") { 
 
     tree->Add(filesPath + "latino_086_ZgammaToLLuG.root");
-
+    //tree->Add("/gpfs/csic_projects/cms/calderon/latino_086_ZgammaToLLuG.root");
   }
   else if (theSample == "WgammaNoStar") {
-    tree->Add(filesPath + "latino_085_WgammaToLNuG.root");
+        tree->Add(filesPath + "latino_085_WgammaToLNuG.root");
+	//tree->Add("/gpfs/csic_projects/cms/calderon/latino_085_WgammaToLNuG.root");
+
   }
   else if (theSample == "WgammaStar") {
     tree->Add(filesPath + "latino_082_WGstarToElNuMad.root");
@@ -305,8 +310,8 @@ void LatinosTreeScript(Float_t luminosity,
   }
   else if (theSample == "HWW125") { 
     tree->Add(filesPath + "latino_1125_ggToH125toWWTo2LAndTau2Nu.root");
-    //tree->Add(filesPath + "latino_2125_vbfToH125toWWTo2LAndTau2Nu.root");
-    //tree->Add(filesPath + "latino_3125_wzttH125ToWW.root");
+    tree->Add(filesPath + "latino_2125_vbfToH125toWWTo2LAndTau2Nu.root");
+    tree->Add(filesPath + "latino_3125_wzttH125ToWW.root");
   }
   else if (theSample =="GamGamWW"){
     tree->Add(filesPath + "latino_008_GamGamWW.root");    
@@ -391,7 +396,7 @@ void LatinosTreeScript(Float_t luminosity,
   
 
     Float_t nllW = 1; 
-    if ( theSample.Contains("_nnll") && jetChannel == 0)
+    if ( theSample.Contains("_nnll") )
       tree->SetBranchAddress("nllW", &nllW);
 
     Float_t fakeW;
@@ -430,7 +435,14 @@ void LatinosTreeScript(Float_t luminosity,
     Double_t totalW      = -999;
 
     
-    Double_t mybaseW = 5984.0/999864; 
+    Double_t mybaseW = 1;
+
+    if ( theSample.Contains("_nnll") ) {
+      if ( theSample.Contains("_pow_") ) mybaseW = 5984.0/999864; 
+      if ( theSample.Contains("_mad_") ) mybaseW = 5984.0/1933235;
+      if ( theSample.Contains("_mcnlo_") ) mybaseW = 5984.0/539594;
+    }
+
     //5812.3/539594; // mcnlo 
     //5812.3/1933235; // madgraph (1933232)
     // 5812.3/999864; // powheg (999860)
@@ -442,13 +454,13 @@ void LatinosTreeScript(Float_t luminosity,
     else if (theSample.Contains("WJetsFakes")) { 
       totalW = fakeW;
      
-      if ( dataset >= 82 && dataset <= 85 ) 
+      if ( dataset >= 82 && dataset <= 86 ) 
 	totalW  = fakeW * (1 + 0.5 * (dataset >= 82 && dataset <= 84)) * baseW * puW * effW * triggW * luminosity;
     
     }
 
     else if (theSample.Contains("_nnll") ) {
-      efficiencyW = puW * effW * triggW *nllW;
+      efficiencyW = puW * effW * triggW * nllW;
       totalW      = (1 + 0.5 * (dataset >= 82 && dataset <= 84)) * mybaseW * efficiencyW * luminosity;
     } 
 
@@ -490,12 +502,15 @@ void LatinosTreeScript(Float_t luminosity,
     if (pt1 <= 20) continue; // increase the pt of the leptons to further reduce Wjets 
     if (ch1*ch2 > 0) continue;
 
-    if (dataset == 86 && (flavorChannel == "MuMu" || flavorChannel == "EE")) continue; 
+    // if (dataset == 86 && (flavorChannel == "MuMu" || flavorChannel == "EE")) continue; 
+    // After talking Andrea's just removing this condition!! 
 
-    if ((SelectedChannel == -1) || (channel == SelectedChannel)    || 
-	(SelectedChannel == 4 && (channel == 2 || channel == 3) )  || 
-	(SelectedChannel == 5 && (channel == 0 || channel == 1) ) ) {
-
+    if ( (SelectedChannel == -1)                                   || 
+	 (channel == SelectedChannel)                              || 
+	 (SelectedChannel == 4 && (channel == 2 || channel == 3) ) || 
+	 (SelectedChannel == 5 && (channel == 0 || channel == 1) ) 
+	 ) {
+     
 
 
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -621,7 +636,7 @@ void LatinosTreeScript(Float_t luminosity,
       //
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+        
   
 
       hWTrigger   ->Fill(1, totalW); 
@@ -796,7 +811,7 @@ void LatinosTreeScript(Float_t luminosity,
 
     */
 
-root 
+
         cout << endl;
     cout << " Expected number of RAW events for " << theSample.Data() << endl;
     cout << " ------------------+-----------" << endl;
