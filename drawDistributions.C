@@ -20,8 +20,8 @@ TString process[nProcesses];
 process[iData]  = "DataRun2012_Total";
 process[itt]    = "TTbar";
 process[itW]    = "TW";
-process[iWW]    = "ggWWto2L";
-process[iqqWW]  = "WWTo2L2Nu_mcnlo";
+process[iWW]    = "ggWWto2L_smear";
+process[iqqWW]  = "WWTo2L2Nu_pow_nnll_smear";
 process[iWZ]    = "WZ";
 process[iZZ]    = "ZZ";
 process[iWg]    = "WgammaNoStar";
@@ -78,12 +78,16 @@ enum myChannels {
   jet1_OF=3*9
 };
 
+const UInt_t Nsyst = 36;
 
-Double_t Systematics [36] = { 7.3,  30.9,  31.3,  27.4,  50.6,   2.6,   6.2,  21.7,  34.1,
-			      6.7,  30.8,  30.0,  28.3,  50.4,  32.2,   6.3,  21.0,  30.3,
-			      12.9,  33.1,  33.3,  23.8,  50.3,   2.0,   6.7,  32.2,  58.3,
-			      12.5,  32.7,  30.1,  26.4,  50.3,  32.0,   5.8,  31.6,  31.2};
+//[*] WW / ggWW/  Vg/ Wjets/ VVV/ DY/ VV/ ggH/ VgS
 
+Double_t Systematics [Nsyst] = { 6.9,  30.4,  31.3,  27.4,  50.6,   2.6,   5.9,  32.5,  34.1,   // jet0_SF
+				 6.5,  30.4,  30.0,  28.3,  50.4,  30.7,   6.2,  28.7,  30.3,   // jet0_OF
+				 13.7,  32.1,  33.3,  23.9,  50.3,   2.0,   6.4,  41.0,  58.3,  // jet1_SF 
+				 13.3,  31.8,  30.1,  26.4,  50.3,  30.4,   5.6,  35.5,  31.2};  // jet1_OF
+				 //9.5,	43.0,  43.4,  39.4,  71.4,  30.8,   8.6,  43.4,	45.6,   // jet0
+				 //19.1,	45.2,  44.9,  35.6,  71.1,  30.5,   8.5,  54.2,	66.1 }; // jet1
 
 
 Double_t systError[nProcesses];
@@ -111,7 +115,7 @@ Bool_t   _setLogy;
 Double_t ttScale[] = {1.07, 1.09, 1.09, 1.09};
 Double_t tWScale[] = {1.07, 1.09, 1.09, 1.09};
 Double_t WWScale[] = {1.00, 1.00, 1.00, 1.00};
-Double_t ZjScale[] = {1.00,1.00 1.00, 1.00} ;//{1.00, 4.20, 1.80, 4.00};
+Double_t ZjScale[] = {1.00, 1.00, 1.00, 1.00} ;//{1.00, 4.20, 1.80, 4.00};
 
 
 //------------------------------------------------------------------------------
@@ -119,7 +123,7 @@ Double_t ZjScale[] = {1.00,1.00 1.00, 1.00} ;//{1.00, 4.20, 1.80, 4.00};
 //------------------------------------------------------------------------------
 void drawDistributions(Int_t    njet       = 0,
 		       TString  channel    = "OF",
-		       Double_t luminosity = 19468,
+		       Double_t luminosity = 19365,
 		       TString  format     = "pdf",
 		       Bool_t   drawRatio  = false,
 		       Bool_t   dataDriven = true,
@@ -146,7 +150,7 @@ void drawDistributions(Int_t    njet       = 0,
   //----------------------------------------------------------------------------
   //TString path = Form("rootfiles/%djet/%s/", _njet, _channel.Data());
 
-  TString path = Form("rootfiles.2014Selection.4L.NewMC/%djet/%s/", _njet, _channel.Data());
+  TString path = Form("rootfiles.2014Selection.4L.NewMC.NewLumi/%djet/%s/", _njet, _channel.Data());
 
   for (UInt_t ip=0; ip<nProcesses; ip++)
     input[ip] = new TFile(path + process[ip] + ".root", "read");
@@ -155,11 +159,11 @@ void drawDistributions(Int_t    njet       = 0,
 
   // Differential distributions
   //----------------------------------------------------------------------------
-  if (0) {
+  if (1) {
 
-    //DrawHistogram("hPtLepton1WWLevel_Diff",  "p_{T}^{max}",           1, 0, "GeV");
-    //DrawHistogram("hDileptonWWLevel_Diff",  "p_{T} (ll) ",           1, 0, "GeV");
-    //DrawHistogram("hDeltaPhiWWLevel_Diff",  "#Delta#phi_{ll}", 1, 0, "rad");
+    DrawHistogram("hPtLepton1WWLevel_Diff",  "p_{T}^{max}",           1, 0, "GeV");
+    DrawHistogram("hDileptonWWLevel_Diff",  "p_{T} (ll) ",           1, 0, "GeV");
+    DrawHistogram("hDeltaPhiWWLevel_Diff",  "#Delta#phi_{ll}", 1, 0, "rad");
     DrawHistogram("hMinvWWLevel_Diff",  "m_{#font[12]{ll}}",           1, 0, "GeV");
   }
 
@@ -186,13 +190,13 @@ void drawDistributions(Int_t    njet       = 0,
   // PAS distributions
   //----------------------------------------------------------------------------
   if (1) {
-    //DrawHistogram("hPtLepton1WWLevel",  "p_{T}^{max}",           10, 0, "GeV", 20, 200);
+    DrawHistogram("hPtLepton1WWLevel",  "p_{T}^{max}",           10, 0, "GeV", 20, 200);
     //DrawHistogram("hPtLepton2WWLevel",  "p_{T}^{min}",           5, 0, "GeV", 20, 100);
-    //DrawHistogram("hPtDiLeptonWWLevel", "p_{T}^{#font[12]{ll}}", 5, 0, "GeV");
-    DrawHistogram("hMinvWWLevel",       "m_{#font[12]{ll}}",     5, 0, "GeV");
+    DrawHistogram("hPtDiLeptonWWLevel", "p_{T}^{#font[12]{ll}}", 5, 0, "GeV");
+   DrawHistogram("hMinvWWLevel",       "m_{#font[12]{ll}}",     5, 0, "GeV");
     //DrawHistogram("hNJetsPF30WWLevel",  "nJets",                 1, 0, "");
     //DrawHistogram("hDeltaRLeptonsWWLevel",   "#DeltaR_{ll}",     5, 0, "rad");
-    //DrawHistogram("hDeltaPhiLeptonsWWLevel", "#Delta#phi_{ll}",  2, 0, "rad");
+    DrawHistogram("hDeltaPhiLeptonsWWLevel", "#Delta#phi_{ll}",  1, 0, "rad");
     //DrawHistogram("hpminMetWWLevel",         "min.proj.E_{T}",   6, 0, "GeV", 20, 200);
       
   }
@@ -317,19 +321,20 @@ void DrawHistogram(TString  hname,
   if ( _njet == 1 && _channel == "SF")  defineChannel  = jet1_SF;
   if ( _njet == 1 && _channel == "OF")  defineChannel  = jet1_OF;
 
-  systError[itt]     = 0.10;
-  systError[itW]     = 0.10;
+  systError[itt]     = 0.10; // 10%
+  systError[itW]     = 0.10; // 10%
   
-  
-  systError[iDY]     = 0.40;      
+  //[*] WW / ggWW/  Vg/ Wjets/ VVV/ DY/ VV/ ggH/ VgS
+
+  systError[iDY]     = Systematics [DYtt+defineChannel]/ 1e2;     
   systError[iWW]     = Systematics [ggWW+defineChannel]/ 1e2;
   systError[iqqWW]   = Systematics [WW+defineChannel]  / 1e2;
   systError[iWZ]     = Systematics [VV+defineChannel]  / 1e2;
   systError[iZZ]     = Systematics [VV+defineChannel]  / 1e2;
   systError[iWg]     = Systematics [Vg+defineChannel]  / 1e2;
   systError[iWgS]    = Systematics [VgS+defineChannel] / 1e2;
-  systError[iWj]     = 0.36;
-  systError[iDYtau]  = 0.50;
+  systError[iWj]     = Systematics [Wjets+defineChannel] / 1e2;
+  systError[iDYtau]  = Systematics [DYtt+defineChannel]/ 1e2;     
   systError[iZg]     = Systematics [Vg+defineChannel] / 1e2;
   systError[iVVV]    = Systematics [VVV+defineChannel]/ 1e2;
   systError[iH125]   = Systematics [ggH+defineChannel]/ 1e2;
@@ -359,14 +364,21 @@ void DrawHistogram(TString  hname,
       binValue += binContent;
       binError += (hist[ip]->GetBinError(ibin) * hist[ip]->GetBinError(ibin));
 
+    
+
+
       if (_dataDriven) { 
 	//binError += (systError[ip]*binContent * systError[ip]*binContent);
 	//}
     
 	if ( nProcesses != itW &&  nProcesses != itt) { 
 	  binError += (systError[ip]*binContent * systError[ip]*binContent);
+	  // luminosity syst
+	  binError += (0.026*binContent * 0.026*binContent);
 	} else {
 	  binError += (systError[ip]*binContent*ttScale[_njet] * systError[ip]*binContent*ttScale[_njet]);
+	  // luminosity syst
+	  binError += (0.026*binContent *ttScale[_njet]* 0.026*binContent*tScale[_njet]);
 	}
       }
 
